@@ -1,21 +1,22 @@
+// Import necessary libraries and components
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { doc, updateDoc, arrayRemove, getDoc } from "firebase/firestore"; // Import getDoc to fetch the document
-import { auth, db } from "../firebase/firebaseconfig"; // Ensure you're importing Firebase correctly
-import { FaTrash, FaPen } from "react-icons/fa"; // Import icons for delete and edit actions
-import { BsFilter } from "react-icons/bs"; // New attractive filter icon
-import { FaCheckSquare, FaSquare } from "react-icons/fa"; // Checkbox icons for marking as completed
+import { doc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase/firebaseconfig";
+import { FaTrash, FaPen } from "react-icons/fa";
+import { BsFilter } from "react-icons/bs";
+import { FaCheckSquare, FaSquare } from "react-icons/fa";
 
 const Welcome = () => {
   const [userName, setUserName] = useState("");
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [error, setError] = useState("");
-  const [taskFilter, setTaskFilter] = useState("all"); // 'all', 'completed', 'incomplete'
-  const [editTask, setEditTask] = useState(null); // To track the task being edited
-  const [updatedTaskText, setUpdatedTaskText] = useState(""); // Text for updated task
-  const [filterMenuOpen, setFilterMenuOpen] = useState(false); // To toggle the dropdown menu
+  const [taskFilter, setTaskFilter] = useState("all");
+  const [editTask, setEditTask] = useState(null);
+  const [updatedTaskText, setUpdatedTaskText] = useState("");
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,12 +25,12 @@ const Welcome = () => {
       if (user) {
         try {
           const userRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(userRef); // Use getDoc for fetching the document
+          const docSnap = await getDoc(userRef);
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
-            setUserName(userData.firstName); // Set user name
-            setTasks(userData.tasks); // Set tasks
+            setUserName(userData.firstName);
+            setTasks(userData.tasks);
           } else {
             setError("No user data found");
           }
@@ -39,8 +40,8 @@ const Welcome = () => {
       }
     };
 
-    fetchUserData(); // Call the function to fetch user data
-  }, []); // Empty dependency array ensures this effect runs once on component mount
+    fetchUserData();
+  }, []);
 
   const addTask = async () => {
     if (!newTask) return;
@@ -66,7 +67,7 @@ const Welcome = () => {
       await updateDoc(userRef, {
         tasks: arrayRemove(task),
       });
-      setTasks(tasks.filter((t) => t !== task)); // Update the local state
+      setTasks(tasks.filter((t) => t !== task));
     } catch (error) {
       setError("Error deleting task");
     }
@@ -83,7 +84,7 @@ const Welcome = () => {
       await updateDoc(userRef, {
         tasks: updatedTasks,
       });
-      setTasks(updatedTasks); // Update the local state
+      setTasks(updatedTasks);
     } catch (error) {
       setError("Error updating task status");
     }
@@ -100,21 +101,19 @@ const Welcome = () => {
       await updateDoc(userRef, {
         tasks: updatedTasks,
       });
-      setTasks(updatedTasks); // Update the local state
-      setEditTask(null); // Reset edit mode
-      setUpdatedTaskText(""); // Clear the text input
+      setTasks(updatedTasks);
+      setEditTask(null);
+      setUpdatedTaskText("");
     } catch (error) {
       setError("Error updating task");
     }
   };
 
-  // Filter tasks based on selected filter
   const filteredTasks =
     taskFilter === "all"
       ? tasks
       : tasks.filter((task) => task.completed === (taskFilter === "completed"));
 
-  // Toggle filter menu visibility
   const toggleFilterMenu = () => {
     setFilterMenuOpen((prev) => !prev);
   };
@@ -125,9 +124,10 @@ const Welcome = () => {
         <h1 className="text-3xl font-semibold text-center text-gray-800 mb-4">
           Welcome, {userName ? userName : "Loading..."}
         </h1>
-        <h2 className="text-xl font-medium text-center text-gray-700 mb-6">Your Tasks</h2>
+        <h2 className="text-xl font-medium text-center text-gray-700 mb-6">
+          Your Tasks
+        </h2>
 
-        {/* Task input and Add button */}
         <div className="flex justify-between mb-6">
           <input
             type="text"
@@ -144,7 +144,6 @@ const Welcome = () => {
           </button>
         </div>
 
-        {/* Error Message */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         {/* Filter Icon and Dropdown */}
@@ -158,23 +157,38 @@ const Welcome = () => {
           </button>
           {filterMenuOpen && (
             <div
-              className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-40 z-10"
+              className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg w-full max-w-xs sm:w-40 z-10"
             >
               <button
-                onClick={() => { setTaskFilter("all"); setFilterMenuOpen(false); }}
-                className={`block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 ${taskFilter === "all" ? "bg-blue-100 font-semibold" : ""}`}
+                onClick={() => {
+                  setTaskFilter("all");
+                  setFilterMenuOpen(false);
+                }}
+                className={`block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 ${
+                  taskFilter === "all" ? "bg-blue-100 font-semibold" : ""
+                }`}
               >
                 All Tasks
               </button>
               <button
-                onClick={() => { setTaskFilter("completed"); setFilterMenuOpen(false); }}
-                className={`block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 ${taskFilter === "completed" ? "bg-blue-100 font-semibold" : ""}`}
+                onClick={() => {
+                  setTaskFilter("completed");
+                  setFilterMenuOpen(false);
+                }}
+                className={`block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 ${
+                  taskFilter === "completed" ? "bg-blue-100 font-semibold" : ""
+                }`}
               >
                 Completed
               </button>
               <button
-                onClick={() => { setTaskFilter("incomplete"); setFilterMenuOpen(false); }}
-                className={`block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 ${taskFilter === "incomplete" ? "bg-blue-100 font-semibold" : ""}`}
+                onClick={() => {
+                  setTaskFilter("incomplete");
+                  setFilterMenuOpen(false);
+                }}
+                className={`block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 ${
+                  taskFilter === "incomplete" ? "bg-blue-100 font-semibold" : ""
+                }`}
               >
                 Incomplete
               </button>
@@ -182,73 +196,70 @@ const Welcome = () => {
           )}
         </div>
 
-        {/* Task List */}
         {filteredTasks.length === 0 ? (
           <p className="text-center text-gray-500">No tasks available</p>
         ) : (
-          <>
-            <ul className="space-y-4">
-              {filteredTasks.map((task, index) => (
-                <li
-                  key={index}
-                  className="flex items-center justify-between border-b-2 border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition"
-                  style={{
-                    textDecoration: task.completed ? "line-through" : "none",
-                    opacity: task.completed ? 0.5 : 1,
-                  }}
-                >
-                  <div className="flex items-center space-x-3">
-                    {editTask === task ? (
-                      <input
-                        type="text"
-                        value={updatedTaskText || task.task}
-                        onChange={(e) => setUpdatedTaskText(e.target.value)}
-                        className="border-2 border-gray-300 p-2 rounded-lg"
-                      />
-                    ) : (
-                      <span className="text-lg text-gray-800">{task.task}</span>
-                    )}
-                  </div>
+          <ul className="space-y-4">
+            {filteredTasks.map((task, index) => (
+              <li
+                key={index}
+                className="flex items-center justify-between border-b-2 border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition"
+                style={{
+                  textDecoration: task.completed ? "line-through" : "none",
+                  opacity: task.completed ? 0.5 : 1,
+                }}
+              >
+                <div className="flex items-center space-x-3">
+                  {editTask === task ? (
+                    <input
+                      type="text"
+                      value={updatedTaskText || task.task}
+                      onChange={(e) => setUpdatedTaskText(e.target.value)}
+                      className="border-2 border-gray-300 p-2 rounded-lg"
+                    />
+                  ) : (
+                    <span className="text-lg text-gray-800">{task.task}</span>
+                  )}
+                </div>
 
-                  <div className="flex space-x-2">
-                    {editTask === task ? (
-                      <button
-                        onClick={() => updateTask(task)}
-                        className="bg-green-500 text-white py-1 px-3 rounded-lg text-xs"
-                      >
-                        Done
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => setEditTask(task)}
-                          className="bg-yellow-500 text-white py-1 px-2 rounded-lg text-xs"
-                        >
-                          <FaPen />
-                        </button>
-                        <button
-                          onClick={() => deleteTask(task)}
-                          className="bg-red-500 text-white py-1 px-2 rounded-lg text-xs"
-                        >
-                          <FaTrash />
-                        </button>
-                      </>
-                    )}
+                <div className="flex space-x-2">
+                  {editTask === task ? (
                     <button
-                      onClick={() => markAsCompleted(task)}
-                      className="p-2 rounded-full text-blue-500 border-2 border-gray-300 hover:bg-blue-100"
+                      onClick={() => updateTask(task)}
+                      className="bg-green-500 text-white py-1 px-3 rounded-lg text-xs"
                     >
-                      {task.completed ? (
-                        <FaCheckSquare size={18} />
-                      ) : (
-                        <FaSquare size={18} />
-                      )}
+                      Done
                     </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setEditTask(task)}
+                        className="bg-yellow-500 text-white py-1 px-2 rounded-lg text-xs"
+                      >
+                        <FaPen />
+                      </button>
+                      <button
+                        onClick={() => deleteTask(task)}
+                        className="bg-red-500 text-white py-1 px-2 rounded-lg text-xs"
+                      >
+                        <FaTrash />
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => markAsCompleted(task)}
+                    className="p-2 rounded-full text-blue-500 border-2 border-gray-300 hover:bg-blue-100"
+                  >
+                    {task.completed ? (
+                      <FaCheckSquare size={18} />
+                    ) : (
+                      <FaSquare size={18} />
+                    )}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>
