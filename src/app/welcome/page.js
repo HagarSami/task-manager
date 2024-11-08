@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getFirestore, doc, updateDoc, arrayRemove, getDoc } from "firebase/firestore"; // Import getDoc to fetch the document
+import { doc, updateDoc, arrayRemove, getDoc } from "firebase/firestore"; // Import getDoc to fetch the document
 import { auth, db } from "../firebase/firebaseconfig"; // Ensure you're importing Firebase correctly
 import { FaTrash, FaPen } from "react-icons/fa"; // Import icons for delete and edit actions
 import { BsFilter } from "react-icons/bs"; // New attractive filter icon
