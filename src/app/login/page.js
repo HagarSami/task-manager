@@ -85,7 +85,7 @@ const Login = () => {
             onClick={handleGoToSignUp}
             className="text-pink-500 hover:underline"
           >
-            Don't have an account? Sign up
+            Don&apos;t have an account? Sign up
           </button>
         </div>
       </div>
